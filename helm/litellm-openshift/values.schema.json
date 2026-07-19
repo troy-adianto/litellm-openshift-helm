@@ -1,0 +1,458 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["masterKey"],
+  "properties": {
+    "masterKey": {
+      "type": "string",
+      "title": "Master Key",
+      "description": "API master key for LiteLLM admin access. Required.",
+      "form": true
+    },
+    "saltKey": {
+      "type": "string",
+      "title": "Salt Key",
+      "description": "Salt key for encryption. Auto-generated if left empty.",
+      "form": true
+    },
+    "postgresql": {
+      "type": "object",
+      "title": "PostgreSQL Database",
+      "form": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "title": "Enable Bundled PostgreSQL",
+          "description": "Deploy a PostgreSQL instance alongside LiteLLM.",
+          "default": true,
+          "form": true
+        },
+        "image": {
+          "type": "object",
+          "title": "PostgreSQL Image",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "title": "Image Registry",
+              "default": "registry.redhat.io",
+              "form": true
+            },
+            "repository": {
+              "type": "string",
+              "title": "Image Repository",
+              "default": "rhel9/postgresql-18",
+              "form": true
+            },
+            "tag": {
+              "type": "string",
+              "title": "Image Tag",
+              "default": "latest",
+              "form": true
+            },
+            "pullPolicy": {
+              "type": "string",
+              "title": "Image Pull Policy",
+              "default": "IfNotPresent",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "form": true
+            }
+          }
+        },
+        "auth": {
+          "type": "object",
+          "title": "Database Authentication",
+          "properties": {
+            "username": {
+              "type": "string",
+              "title": "Database Username",
+              "default": "litellm",
+              "form": true
+            },
+            "password": {
+              "type": "string",
+              "title": "Database Password",
+              "description": "Password for the PostgreSQL user. Auto-generated if left empty.",
+              "form": true
+            },
+            "database": {
+              "type": "string",
+              "title": "Database Name",
+              "default": "litellm",
+              "form": true
+            }
+          }
+        },
+        "persistence": {
+          "type": "object",
+          "title": "Persistent Storage",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "Enable Persistent Storage",
+              "default": true,
+              "form": true
+            },
+            "size": {
+              "type": "string",
+              "title": "Storage Size",
+              "default": "8Gi",
+              "form": true
+            },
+            "storageClass": {
+              "type": "string",
+              "title": "Storage Class",
+              "description": "StorageClass name. Leave empty to use the cluster default.",
+              "form": true
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "title": "PostgreSQL Resources",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "title": "Resource Requests",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "title": "CPU Request",
+                  "default": "250m",
+                  "form": true
+                },
+                "memory": {
+                  "type": "string",
+                  "title": "Memory Request",
+                  "default": "256Mi",
+                  "form": true
+                }
+              }
+            },
+            "limits": {
+              "type": "object",
+              "title": "Resource Limits",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "title": "CPU Limit",
+                  "default": "1000m",
+                  "form": true
+                },
+                "memory": {
+                  "type": "string",
+                  "title": "Memory Limit",
+                  "default": "512Mi",
+                  "form": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "litellm": {
+      "type": "object",
+      "title": "LiteLLM Configuration",
+      "form": true,
+      "properties": {
+        "db": {
+          "type": "object",
+          "title": "Database Connection",
+          "properties": {
+            "useExisting": {
+              "type": "boolean",
+              "title": "Use Existing Database",
+              "description": "Use the bundled PostgreSQL. Set to false to use an external database.",
+              "default": true,
+              "form": true
+            },
+            "deployStandalone": {
+              "type": "boolean",
+              "title": "Deploy Standalone Database",
+              "default": false,
+              "form": true
+            },
+            "endpoint": {
+              "type": "string",
+              "title": "Database Endpoint",
+              "description": "PostgreSQL host. Set to <release-name>-postgresql.<namespace>.svc.cluster.local for bundled PostgreSQL.",
+              "form": true
+            },
+            "database": {
+              "type": "string",
+              "title": "Database Name",
+              "default": "litellm",
+              "form": true
+            },
+            "secret": {
+              "type": "object",
+              "title": "Database Secret",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "Secret Name",
+                  "description": "Name of the secret containing database credentials. Set to <release-name>-db.",
+                  "form": true
+                },
+                "usernameKey": {
+                  "type": "string",
+                  "title": "Username Key",
+                  "default": "username",
+                  "form": true
+                },
+                "passwordKey": {
+                  "type": "string",
+                  "title": "Password Key",
+                  "default": "password",
+                  "form": true
+                }
+              }
+            }
+          }
+        },
+        "masterkeySecretName": {
+          "type": "string",
+          "title": "Master Key Secret Name",
+          "description": "Name of the secret containing the master key. Set to <release-name>-masterkey.",
+          "form": true
+        },
+        "masterkeySecretKey": {
+          "type": "string",
+          "title": "Master Key Secret Key",
+          "default": "masterkey",
+          "form": true
+        },
+        "environmentSecrets": {
+          "type": "array",
+          "title": "Environment Secrets",
+          "description": "List of secret names to mount as environment variables. Include <release-name>-env for the salt key.",
+          "items": {
+            "type": "string"
+          },
+          "form": true
+        },
+        "replicaCount": {
+          "type": "integer",
+          "title": "Replica Count",
+          "description": "Number of LiteLLM proxy replicas.",
+          "default": 1,
+          "minimum": 1,
+          "form": true
+        },
+        "image": {
+          "type": "object",
+          "title": "LiteLLM Image",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "title": "Image Repository",
+              "default": "ghcr.io/berriai/litellm-non_root",
+              "form": true
+            },
+            "tag": {
+              "type": "string",
+              "title": "Image Tag",
+              "default": "main-stable",
+              "form": true
+            },
+            "pullPolicy": {
+              "type": "string",
+              "title": "Image Pull Policy",
+              "default": "Always",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "form": true
+            }
+          }
+        },
+        "route": {
+          "type": "object",
+          "title": "OpenShift Route",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "Enable Route",
+              "description": "Create an OpenShift Route for external access.",
+              "default": true,
+              "form": true
+            },
+            "host": {
+              "type": "string",
+              "title": "Route Hostname",
+              "description": "Custom hostname for the route. Leave empty for auto-generated hostname.",
+              "form": true
+            },
+            "tls": {
+              "type": "object",
+              "title": "TLS Configuration",
+              "properties": {
+                "termination": {
+                  "type": "string",
+                  "title": "TLS Termination",
+                  "default": "edge",
+                  "enum": ["edge", "passthrough", "reencrypt"],
+                  "form": true
+                },
+                "insecureEdgeTerminationPolicy": {
+                  "type": "string",
+                  "title": "Insecure Traffic Policy",
+                  "default": "Redirect",
+                  "enum": ["Allow", "Redirect", "None"],
+                  "form": true
+                }
+              }
+            }
+          }
+        },
+        "proxy_config": {
+          "type": "object",
+          "title": "Proxy Configuration",
+          "properties": {
+            "model_list": {
+              "type": "array",
+              "title": "Model List",
+              "description": "List of LLM models to proxy.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "model_name": {
+                    "type": "string",
+                    "title": "Model Name",
+                    "description": "Display name for the model."
+                  },
+                  "litellm_params": {
+                    "type": "object",
+                    "title": "LiteLLM Parameters",
+                    "properties": {
+                      "model": {
+                        "type": "string",
+                        "title": "Model ID",
+                        "description": "LiteLLM model identifier (e.g. openai/gpt-4, anthropic/claude-3)."
+                      },
+                      "api_base": {
+                        "type": "string",
+                        "title": "API Base URL",
+                        "description": "Base URL of the model API endpoint."
+                      },
+                      "api_key": {
+                        "type": "string",
+                        "title": "API Key",
+                        "description": "API key for the model provider."
+                      }
+                    }
+                  }
+                }
+              },
+              "form": true
+            },
+            "general_settings": {
+              "type": "object",
+              "title": "General Settings",
+              "properties": {
+                "database_connection_pool_limit": {
+                  "type": "integer",
+                  "title": "DB Connection Pool Limit",
+                  "default": 10,
+                  "minimum": 1,
+                  "form": true
+                },
+                "database_connection_timeout": {
+                  "type": "integer",
+                  "title": "DB Connection Timeout (seconds)",
+                  "default": 60,
+                  "minimum": 1,
+                  "form": true
+                }
+              }
+            },
+            "litellm_settings": {
+              "type": "object",
+              "title": "LiteLLM Settings",
+              "properties": {
+                "drop_params": {
+                  "type": "boolean",
+                  "title": "Drop Unsupported Params",
+                  "description": "Silently drop parameters not supported by the model provider.",
+                  "default": true,
+                  "form": true
+                },
+                "set_verbose": {
+                  "type": "boolean",
+                  "title": "Verbose Logging",
+                  "description": "Enable verbose debug logging.",
+                  "default": false,
+                  "form": true
+                }
+              }
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "title": "LiteLLM Resources",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "title": "Resource Requests",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "title": "CPU Request",
+                  "default": "100m",
+                  "form": true
+                },
+                "memory": {
+                  "type": "string",
+                  "title": "Memory Request",
+                  "default": "512Mi",
+                  "form": true
+                }
+              }
+            },
+            "limits": {
+              "type": "object",
+              "title": "Resource Limits",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "title": "CPU Limit",
+                  "default": "2000m",
+                  "form": true
+                },
+                "memory": {
+                  "type": "string",
+                  "title": "Memory Limit",
+                  "default": "2Gi",
+                  "form": true
+                }
+              }
+            }
+          }
+        },
+        "securityContext": {
+          "type": "object",
+          "title": "Security Context",
+          "properties": {
+            "runAsNonRoot": {
+              "type": "boolean",
+              "title": "Run as Non-Root",
+              "default": true,
+              "form": true
+            },
+            "readOnlyRootFilesystem": {
+              "type": "boolean",
+              "title": "Read-Only Root Filesystem",
+              "default": false,
+              "form": true
+            },
+            "allowPrivilegeEscalation": {
+              "type": "boolean",
+              "title": "Allow Privilege Escalation",
+              "default": false,
+              "form": true
+            }
+          }
+        }
+      }
+    }
+  }
+}
