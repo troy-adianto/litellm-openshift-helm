@@ -1,0 +1,24 @@
+{{- if .Values.litellm.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: litellm
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  {{- if .Values.litellm.route.host }}
+  host: {{ .Values.litellm.route.host | quote }}
+  {{- end }}
+  port:
+    targetPort: http
+  tls:
+    termination: {{ .Values.litellm.route.tls.termination | default "edge" }}
+    insecureEdgeTerminationPolicy: {{ .Values.litellm.route.tls.insecureEdgeTerminationPolicy | default "Redirect" }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}
+    weight: 100
+  wildcardPolicy: None
+{{- end }}
