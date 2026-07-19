@@ -3,7 +3,35 @@ entries:
   litellm-openshift:
   - apiVersion: v2
     appVersion: 1.92.0
-    created: "2026-07-19T10:52:27.975898+08:00"
+    created: "2026-07-19T17:44:02.597321+08:00"
+    dependencies:
+    - alias: litellm
+      name: litellm-helm
+      repository: oci://ghcr.io/berriai
+      version: 1.92.0
+    description: A Helm chart for deploying LiteLLM AI Gateway on OpenShift with PostgreSQL
+    digest: a0cd37b282812c805035462f286d68312c22f8594c4cdc6d987715e692f32c85
+    home: https://github.com/BerriAI/litellm
+    keywords:
+    - litellm
+    - llm
+    - openai
+    - anthropic
+    - ai-gateway
+    - openshift
+    maintainers:
+    - email: your.email@example.com
+      name: Your Name
+    name: litellm-openshift
+    sources:
+    - https://github.com/BerriAI/litellm
+    type: application
+    urls:
+    - https://troy-adianto.github.io/litellm-openshift-helm/litellm-openshift-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 1.92.0
+    created: "2026-07-19T17:44:02.591105+08:00"
     dependencies:
     - alias: litellm
       name: litellm-helm
@@ -29,4 +57,4 @@ entries:
     urls:
     - https://troy-adianto.github.io/litellm-openshift-helm/litellm-openshift-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-19T10:52:27.967635+08:00"
+generated: "2026-07-19T17:44:02.583152+08:00"
