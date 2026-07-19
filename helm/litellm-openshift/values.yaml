@@ -1,0 +1,120 @@
+# Default values for litellm-openshift
+# This chart wraps the official LiteLLM Helm chart and adds PostgreSQL
+
+# PostgreSQL Database Configuration
+postgresql:
+  # -- Enable bundled PostgreSQL deployment
+  enabled: true
+
+  # -- PostgreSQL container image (Red Hat registry)
+  image:
+    registry: registry.redhat.io
+    repository: rhel9/postgresql-18
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  # -- Database authentication
+  auth:
+    username: litellm
+    password: ""  # Auto-generated if empty
+    database: litellm
+
+  # -- Persistent storage configuration
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""  # Use default StorageClass
+
+  # -- Resource limits for PostgreSQL
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+
+# LiteLLM Configuration (Official Helm Chart)
+litellm:
+  # Database configuration - use bundled PostgreSQL
+  # NOTE: Helm doesn't support templating in values.yaml
+  # The actual values will be constructed by the parent chart
+  db:
+    useExisting: true
+    deployStandalone: false
+    # endpoint will be set via --set during helm install
+    endpoint: ""
+    database: litellm
+    secret:
+      # Secret name will be set via --set during helm install
+      name: ""
+      usernameKey: username
+      passwordKey: password
+
+  # Master key configuration
+  # Secret name will be set via --set during helm install
+  masterkeySecretName: ""
+  masterkeySecretKey: masterkey
+
+  # Environment secrets
+  # Secret name will be set via --set during helm install
+  environmentSecrets: []
+
+  # LiteLLM proxy configuration
+  proxy_config:
+    model_list: []
+    # Example:
+    # - model_name: llama-32-3b-instruct
+    #   litellm_params:
+    #     model: openai/llama-32-3b-instruct
+    #     api_base: http://llama-32-3b-instruct-predictor.my-first-model.svc.cluster.local:80/v1
+    #     api_key: dummy
+
+    general_settings:
+      database_connection_pool_limit: 10
+      database_connection_timeout: 60
+
+    litellm_settings:
+      drop_params: true
+      set_verbose: false
+
+  # OpenShift Route (instead of Ingress)
+  route:
+    enabled: true
+    host: ""
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+
+  # Resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+  # Replica count
+  replicaCount: 1
+
+  # Image configuration (use non-root variant for OpenShift)
+  image:
+    repository: ghcr.io/berriai/litellm-non_root
+    tag: "main-stable"
+    pullPolicy: Always
+
+  # Security context for OpenShift SCC compliance
+  securityContext:
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+# Master Key (Required)
+masterKey: ""  # Must be provided by user
+
+# Salt Key (Auto-generated if empty)
+saltKey: ""

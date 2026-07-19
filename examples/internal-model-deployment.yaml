@@ -1,0 +1,84 @@
+# LiteLLM with internal model deployment
+# Use this to connect to a model deployed within your OpenShift cluster
+
+# Master Key (Required)
+masterKey: "demo123"
+
+# PostgreSQL Configuration (Bundled)
+postgresql:
+  enabled: true
+  auth:
+    username: litellm
+    password: "demo123"
+    database: litellm
+  persistence:
+    enabled: true
+    size: 8Gi
+
+# LiteLLM Configuration
+litellm:
+  # Database configuration - points to bundled PostgreSQL
+  db:
+    useExisting: true
+    deployStandalone: false
+    endpoint: "litellm-postgresql.litellm.svc.cluster.local"
+    database: litellm
+    secret:
+      name: "litellm-db"
+      usernameKey: username
+      passwordKey: password
+
+  # Master key secret reference
+  masterkeySecretName: "litellm-masterkey"
+  masterkeySecretKey: masterkey
+
+  # Environment secrets
+  environmentSecrets:
+    - "litellm-env"
+
+  # LiteLLM proxy configuration with internal model
+  proxy_config:
+    model_list:
+      - model_name: llama-32-3b-instruct
+        litellm_params:
+          model: openai/llama-32-3b-instruct
+          # Internal model service endpoint
+          # Format: http://<service-name>.<namespace>.svc.cluster.local:<port>/v1
+          api_base: http://llama-32-3b-instruct-predictor.my-first-model.svc.cluster.local:8080/v1
+          api_key: dummy
+
+    general_settings:
+      database_connection_pool_limit: 10
+      database_connection_timeout: 60
+
+    litellm_settings:
+      drop_params: true
+      set_verbose: false
+
+  # OpenShift Route
+  route:
+    enabled: true
+    host: ""
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+
+  # Resources
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+  # Image (non-root variant for OpenShift)
+  image:
+    repository: ghcr.io/berriai/litellm-non_root
+    tag: "main-stable"
+    pullPolicy: Always
+
+# NOTE: Update the following values to match your internal model deployment:
+# - model_name: The name you want to use for the model in LiteLLM
+# - api_base: The internal service endpoint of your model
+#   Example: http://<service-name>.<namespace>.svc.cluster.local:<port>/v1

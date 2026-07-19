@@ -1,0 +1,22 @@
+# Helm
+*.tgz
+.helm/
+charts/*.tgz
+
+# Claude
+.claude/
+
+# OS
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Secrets (never commit!)
+*secret*.yaml
+*password*.txt
+*.key
+
+# Temporary files
+*.tmp
+*.log

@@ -1,0 +1,81 @@
+# Basic LiteLLM deployment with bundled PostgreSQL
+# Minimal working configuration for testing LiteLLM on OpenShift
+
+# Master Key (Required)
+masterKey: "demo123"
+
+# PostgreSQL Configuration (Bundled)
+postgresql:
+  enabled: true
+  auth:
+    username: litellm
+    password: "demo123"
+    database: litellm
+  persistence:
+    enabled: true
+    size: 8Gi
+
+# LiteLLM Configuration
+litellm:
+  # Database configuration - points to bundled PostgreSQL
+  db:
+    useExisting: true
+    deployStandalone: false
+    endpoint: "litellm-postgresql.litellm.svc.cluster.local"
+    database: litellm
+    secret:
+      name: "litellm-db"
+      usernameKey: username
+      passwordKey: password
+
+  # Master key secret reference
+  masterkeySecretName: "litellm-masterkey"
+  masterkeySecretKey: masterkey
+
+  # Environment secrets
+  environmentSecrets:
+    - "litellm-env"
+
+  # LiteLLM proxy configuration
+  proxy_config:
+    model_list:
+      - model_name: gpt-4
+        litellm_params:
+          model: openai/gpt-4
+          api_key: os.environ/OPENAI_API_KEY
+
+    general_settings:
+      database_connection_pool_limit: 10
+      database_connection_timeout: 60
+
+    litellm_settings:
+      drop_params: true
+      set_verbose: false
+
+  # Provider API keys
+  env:
+    - name: OPENAI_API_KEY
+      value: "sk-your-openai-key-here"
+
+  # OpenShift Route
+  route:
+    enabled: true
+    host: ""
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+
+  # Resources
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+  # Image (non-root variant for OpenShift)
+  image:
+    repository: ghcr.io/berriai/litellm-non_root
+    tag: "main-stable"
+    pullPolicy: Always

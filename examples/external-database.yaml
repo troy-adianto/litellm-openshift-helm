@@ -1,0 +1,82 @@
+# LiteLLM with external PostgreSQL database
+# Use this when you have an existing PostgreSQL database
+
+# Master Key (Required)
+masterKey: "demo123"
+
+# Disable bundled PostgreSQL
+postgresql:
+  enabled: false
+
+# LiteLLM Configuration
+litellm:
+  # Database configuration - external PostgreSQL
+  db:
+    useExisting: true
+    deployStandalone: false
+    endpoint: "postgresql.example.com"
+    port: 5432
+    database: litellm
+    secret:
+      name: "litellm-db"
+      usernameKey: username
+      passwordKey: password
+
+  # Master key secret reference
+  masterkeySecretName: "litellm-masterkey"
+  masterkeySecretKey: masterkey
+
+  # Environment secrets
+  environmentSecrets:
+    - "litellm-env"
+
+  # LiteLLM proxy configuration
+  proxy_config:
+    model_list:
+      - model_name: gpt-4
+        litellm_params:
+          model: openai/gpt-4
+          api_key: os.environ/OPENAI_API_KEY
+
+    general_settings:
+      database_connection_pool_limit: 10
+      database_connection_timeout: 60
+
+    litellm_settings:
+      drop_params: true
+      set_verbose: false
+
+  # Provider API keys
+  env:
+    - name: OPENAI_API_KEY
+      value: "sk-your-openai-key-here"
+
+  # OpenShift Route
+  route:
+    enabled: true
+    host: ""
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+
+  # Resources
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+  # Image (non-root variant for OpenShift)
+  image:
+    repository: ghcr.io/berriai/litellm-non_root
+    tag: "main-stable"
+    pullPolicy: Always
+
+# NOTE: Before deploying, create the database secret manually:
+#
+# kubectl create secret generic litellm-db \
+#   --from-literal=username=litellm \
+#   --from-literal=password=your-db-password \
+#   -n litellm
