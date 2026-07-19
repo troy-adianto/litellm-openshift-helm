@@ -2,7 +2,7 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "litellm-openshift.litellm-fullname" . }}
   labels:
     app.kubernetes.io/name: litellm
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -18,7 +18,7 @@ spec:
     insecureEdgeTerminationPolicy: {{ .Values.litellm.route.tls.insecureEdgeTerminationPolicy | default "Redirect" }}
   to:
     kind: Service
-    name: {{ .Release.Name }}
+    name: {{ include "litellm-openshift.litellm-fullname" . }}
     weight: 100
   wildcardPolicy: None
 {{- end }}

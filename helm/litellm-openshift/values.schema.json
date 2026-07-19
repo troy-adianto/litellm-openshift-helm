@@ -1,14 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["masterKey"],
   "properties": {
-    "masterKey": {
-      "type": "string",
-      "title": "Master Key",
-      "description": "API master key for LiteLLM admin access. Required.",
-      "form": true
-    },
     "saltKey": {
       "type": "string",
       "title": "Salt Key",
@@ -154,7 +147,14 @@
       "type": "object",
       "title": "LiteLLM Configuration",
       "form": true,
+      "required": ["masterkey"],
       "properties": {
+        "masterkey": {
+          "type": "string",
+          "title": "Master Key",
+          "description": "API master key for LiteLLM admin access. Required.",
+          "form": true
+        },
         "db": {
           "type": "object",
           "title": "Database Connection",
@@ -175,8 +175,8 @@
             "endpoint": {
               "type": "string",
               "title": "Database Endpoint",
-              "description": "PostgreSQL host. Set to <release-name>-postgresql.<namespace>.svc.cluster.local for bundled PostgreSQL.",
-              "form": true
+              "description": "PostgreSQL host. Auto-derived from release name if left empty. Override only for external databases.",
+              "form": false
             },
             "database": {
               "type": "string",
@@ -191,8 +191,8 @@
                 "name": {
                   "type": "string",
                   "title": "Secret Name",
-                  "description": "Name of the secret containing database credentials. Set to <release-name>-db.",
-                  "form": true
+                  "description": "Name of the secret containing database credentials. Auto-derived from release name if left empty.",
+                  "form": false
                 },
                 "usernameKey": {
                   "type": "string",
@@ -213,8 +213,8 @@
         "masterkeySecretName": {
           "type": "string",
           "title": "Master Key Secret Name",
-          "description": "Name of the secret containing the master key. Set to <release-name>-masterkey.",
-          "form": true
+          "description": "Auto-derived from release name. Override only for external secret management.",
+          "form": false
         },
         "masterkeySecretKey": {
           "type": "string",
@@ -225,11 +225,11 @@
         "environmentSecrets": {
           "type": "array",
           "title": "Environment Secrets",
-          "description": "List of secret names to mount as environment variables. Include <release-name>-env for the salt key.",
+          "description": "Auto-derived from release name. Add extra secret names to mount as environment variables.",
           "items": {
             "type": "string"
           },
-          "form": true
+          "form": false
         },
         "replicaCount": {
           "type": "integer",

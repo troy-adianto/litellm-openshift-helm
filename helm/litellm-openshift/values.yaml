@@ -42,22 +42,23 @@ litellm:
   db:
     useExisting: true
     deployStandalone: false
-    # endpoint will be set via --set during helm install
+    # Auto-derived from release name: <release>-postgresql.<namespace>.svc.cluster.local
     endpoint: ""
     database: litellm
     secret:
-      # Secret name will be set via --set during helm install
+      # Auto-derived from release name: <release>-db
       name: ""
       usernameKey: username
       passwordKey: password
 
-  # Master key configuration
-  # Secret name will be set via --set during helm install
+  # Master key for LiteLLM API access (required)
+  masterkey: ""
+
+  # Auto-derived from release name: <release>-masterkey
   masterkeySecretName: ""
   masterkeySecretKey: masterkey
 
-  # Environment secrets
-  # Secret name will be set via --set during helm install
+  # Auto-derived from release name: [<release>-env] when empty
   environmentSecrets: []
 
   # LiteLLM proxy configuration
@@ -112,9 +113,6 @@ litellm:
     capabilities:
       drop:
         - ALL
-
-# Master Key (Required)
-masterKey: ""  # Must be provided by user
 
 # Salt Key (Auto-generated if empty)
 saltKey: ""

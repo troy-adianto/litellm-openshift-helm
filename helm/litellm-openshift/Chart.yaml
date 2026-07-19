@@ -2,7 +2,7 @@ apiVersion: v2
 name: litellm-openshift
 description: A Helm chart for deploying LiteLLM AI Gateway on OpenShift with PostgreSQL
 type: application
-version: 0.3.0
+version: 0.4.0
 appVersion: "1.92.0"
 
 keywords:

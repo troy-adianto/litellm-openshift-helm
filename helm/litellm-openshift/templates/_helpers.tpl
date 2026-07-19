@@ -1,8 +1,22 @@
 {{/*
+Mirrors the subchart's litellm.fullname logic so wrapper-created
+resources (secrets, PostgreSQL) use the same name prefix the subchart
+expects. The subchart alias is "litellm", so $name = "litellm".
+*/}}
+{{- define "litellm-openshift.litellm-fullname" -}}
+{{- $name := "litellm" }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
+{{/*
 PostgreSQL service name
 */}}
 {{- define "postgresql.fullname" -}}
-{{- printf "%s-postgresql" .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-postgresql" (include "litellm-openshift.litellm-fullname" .) | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
