@@ -79,6 +79,20 @@ litellm:
       drop_params: true
       set_verbose: false
 
+  # Migration job runs as a regular resource (not a hook) with the root image,
+  # since the non-root image lacks Node.js libraries needed by Prisma CLI.
+  migrationJob:
+    enabled: true
+    image:
+      repository: ghcr.io/berriai/litellm
+      tag: main-stable
+      pullPolicy: Always
+    hooks:
+      argocd:
+        enabled: false
+      helm:
+        enabled: false
+
   # OpenShift Route (instead of Ingress)
   route:
     enabled: true
