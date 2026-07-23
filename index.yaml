@@ -3,7 +3,35 @@ entries:
   litellm-openshift:
   - apiVersion: v2
     appVersion: 1.92.0
-    created: "2026-07-19T20:53:13.787412+08:00"
+    created: "2026-07-23T16:27:05.352714+08:00"
+    dependencies:
+    - alias: litellm
+      name: litellm-helm
+      repository: oci://ghcr.io/berriai
+      version: 1.92.0
+    description: A Helm chart for deploying LiteLLM AI Gateway on OpenShift with PostgreSQL
+    digest: ed18c0e75572aef1609ca0df40abee75a36f2f06c185004836315e1840c4adc0
+    home: https://github.com/BerriAI/litellm
+    keywords:
+    - litellm
+    - llm
+    - openai
+    - anthropic
+    - ai-gateway
+    - openshift
+    maintainers:
+    - email: your.email@example.com
+      name: Your Name
+    name: litellm-openshift
+    sources:
+    - https://github.com/BerriAI/litellm
+    type: application
+    urls:
+    - https://troy-adianto.github.io/litellm-openshift-helm/litellm-openshift-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
+    appVersion: 1.92.0
+    created: "2026-07-23T16:27:05.346652+08:00"
     dependencies:
     - alias: litellm
       name: litellm-helm
@@ -31,7 +59,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.92.0
-    created: "2026-07-19T20:53:13.780559+08:00"
+    created: "2026-07-23T16:27:05.340699+08:00"
     dependencies:
     - alias: litellm
       name: litellm-helm
@@ -59,7 +87,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.92.0
-    created: "2026-07-19T20:53:13.774727+08:00"
+    created: "2026-07-23T16:27:05.334543+08:00"
     dependencies:
     - alias: litellm
       name: litellm-helm
@@ -87,7 +115,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.92.0
-    created: "2026-07-19T20:53:13.768532+08:00"
+    created: "2026-07-23T16:27:05.326731+08:00"
     dependencies:
     - alias: litellm
       name: litellm-helm
@@ -113,4 +141,4 @@ entries:
     urls:
     - https://troy-adianto.github.io/litellm-openshift-helm/litellm-openshift-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-19T20:53:13.76106+08:00"
+generated: "2026-07-23T16:27:05.318912+08:00"
